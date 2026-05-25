@@ -1,8 +1,9 @@
-﻿const express = require('express');
+const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const connectDB = require('./config/db');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
@@ -26,7 +27,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Static folder for uploads
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+const uploadsDir = path.join(__dirname, '/uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+}
+app.use('/uploads', express.static(uploadsDir));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
